@@ -17,7 +17,7 @@
 package com.joaquimley.faboptions;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -43,15 +43,15 @@ public class FabOptionsButtonContainer extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public AppCompatImageView addButton(Context context, int buttonId, CharSequence title, Drawable drawableIcon) {
-        return addButton(context, buttonId, title, drawableIcon, null);
+    public AppCompatImageView addButton(Context context, int buttonId, CharSequence title, @DrawableRes int drawableId) {
+        return addButton(context, buttonId, title, drawableId, null);
     }
 
-    public AppCompatImageView addButton(Context context, int buttonId, CharSequence title, Drawable drawableIcon, Integer index) {
+    public AppCompatImageView addButton(Context context, int buttonId, CharSequence title, @DrawableRes int drawableId, Integer index) {
         AppCompatImageView fabOptionButton =
                 (AppCompatImageView) LayoutInflater.from(context).inflate(R.layout.faboptions_button, this, false);
 
-        fabOptionButton.setImageDrawable(drawableIcon);
+        fabOptionButton.setImageResource(drawableId);
         fabOptionButton.setContentDescription(title);
         fabOptionButton.setId(buttonId);
 

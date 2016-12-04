@@ -29,6 +29,7 @@ public class FabOptionsBehavior extends CoordinatorLayout.Behavior<FrameLayout> 
 
     @Override
     public boolean layoutDependsOn(CoordinatorLayout parent, FrameLayout child, View dependency) {
+        // TODO: 21/11/2016 Handle instanceof BottomNavigationView & others
         return dependency instanceof Snackbar.SnackbarLayout;
     }
 
@@ -36,7 +37,6 @@ public class FabOptionsBehavior extends CoordinatorLayout.Behavior<FrameLayout> 
     public boolean onDependentViewChanged(CoordinatorLayout parent, FrameLayout child, View dependency) {
         float translationY = Math.min(0, dependency.getTranslationY() - dependency.getHeight());
         child.setTranslationY(translationY);
-        // TODO: 21/11/2016 Handle instanceof Bottomsheetnav & others
         return true;
     }
 
@@ -45,5 +45,4 @@ public class FabOptionsBehavior extends CoordinatorLayout.Behavior<FrameLayout> 
         super.onDependentViewRemoved(parent, child, dependency);
         child.setTranslationY(0);
     }
-    //FabOptions component default {@link CoordinatorLayout.Behavior} to react to {@link Snackbar}
 }

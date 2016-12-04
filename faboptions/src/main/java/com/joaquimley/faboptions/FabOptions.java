@@ -19,9 +19,13 @@ package com.joaquimley.faboptions;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.AnimatedVectorDrawable;
+import android.os.Build;
 import android.support.annotation.MenuRes;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.internal.view.SupportMenu;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.AppCompatImageView;
@@ -49,7 +53,7 @@ public class FabOptions extends FrameLayout implements View.OnClickListener {
     private boolean mIsOpen;
     private View.OnClickListener mListener;
 
-    private Menu mMenu; // TODO: 22/11/2016 add items in runtime
+    private SupportMenu mMenu; // TODO: 22/11/2016 add items in runtime
     private FloatingActionButton mFab;
 
     private View mBackground;
@@ -107,7 +111,7 @@ public class FabOptions extends FrameLayout implements View.OnClickListener {
 
     private void addButton(Context context, MenuItem menuItem) {
         AppCompatImageView button = mButtonContainer.addButton(context, menuItem.getItemId(),
-                menuItem.getTitle(), menuItem.getIcon());
+                menuItem.getTitle(), menuItem.getIcon()).;
         button.setOnClickListener(this);
     }
 
@@ -150,33 +154,45 @@ public class FabOptions extends FrameLayout implements View.OnClickListener {
         }
     }
 
+
     private void open() {
-        AnimatedVectorDrawable drawable = (AnimatedVectorDrawable) getResources().getDrawable(R.drawable.faboptions_ic_menu_animatable, null);
-        mFab.setImageDrawable(drawable);
-        drawable.start();
-        TransitionManager.beginDelayedTransition(this, new OpenMorphTransition(mButtonContainer));
-        animateButtons(true);
-        animateBackground(true);
+        AnimatedVectorDrawable drawable = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            drawable = (AnimatedVectorDrawable) getResources()
+                    .getDrawable(R.drawable.faboptions_ic_menu_animatable, null);
+            mFab.setImageDrawable(drawable);
+            drawable.start();
+            TransitionManager.beginDelayedTransition(this, new OpenMorphTransition(mButtonContainer));
+        } else {
+            mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.faboptions_ic_close));
+        }
+        scaleButtons(true);
+        scaleBackground(true);
         mIsOpen = true;
     }
 
     private void close() {
-        AnimatedVectorDrawable drawable = (AnimatedVectorDrawable) getResources().getDrawable(R.drawable.faboptions_ic_close_animatable, null);
-        mFab.setImageDrawable(drawable);
-        drawable.start();
-        TransitionManager.beginDelayedTransition(this, new CloseMorphTransition(mButtonContainer));
-        animateButtons(false);
-        animateBackground(false);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            AnimatedVectorDrawable drawable = (AnimatedVectorDrawable) getResources()
+                    .getDrawable(R.drawable.faboptions_ic_close_animatable, null);
+            mFab.setImageDrawable(drawable);
+            drawable.start();
+            TransitionManager.beginDelayedTransition(this, new CloseMorphTransition(mButtonContainer));
+        } else {
+            mFab.setImageResource(R.drawable.faboptions_ic_close);
+        }
+        scaleButtons(false);
+        scaleBackground(false);
         mIsOpen = false;
     }
 
-    private void animateBackground(final boolean isOpen) {
+    private void scaleBackground(final boolean isOpen) {
         ViewGroup.LayoutParams backgroundLayoutParams = mBackground.getLayoutParams();
         backgroundLayoutParams.width = isOpen ? mButtonContainer.getMeasuredWidth() : NO_DIMENSION;
         mBackground.setLayoutParams(backgroundLayoutParams);
     }
 
-    private void animateButtons(boolean isOpen) {
+    private void scaleButtons(boolean isOpen) {
         for (int i = 0; i < mButtonContainer.getChildCount(); i++) {
             mButtonContainer.getChildAt(i).setScaleX(isOpen ? 1 : 0);
             mButtonContainer.getChildAt(i).setScaleY(isOpen ? 1 : 0);
@@ -187,33 +203,45 @@ public class FabOptions extends FrameLayout implements View.OnClickListener {
         return mIsOpen;
     }
 
+    /**
+     * Scaling animations
+     */
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private static class OpenMorphTransition extends TransitionSet {
         OpenMorphTransition(ViewGroup viewGroup) {
 
             ChangeBounds changeBound = new ChangeBounds();
             changeBound.excludeChildren(R.id.button_container, true);
 
-            ChangeTransform changeTransform = new ChangeTransform();
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                changeTransform.addTarget(viewGroup.getChildAt(i));
+            ChangeTransform changeTransform = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                changeTransform = new ChangeTransform();
+                for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                    changeTransform.addTarget(viewGroup.getChildAt(i));
+                    addTransition(changeTransform);
+                }
             }
             addTransition(changeBound);
-            addTransition(changeTransform);
             setOrdering(TransitionSet.ORDERING_SEQUENTIAL);
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private static class CloseMorphTransition extends TransitionSet {
         CloseMorphTransition(ViewGroup viewGroup) {
             ChangeBounds changeBound = new ChangeBounds();
             changeBound.excludeChildren(R.id.button_container, true);
 
-            ChangeTransform changeTransform = new ChangeTransform();
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                changeTransform.addTarget(viewGroup.getChildAt(i));
+            ChangeTransform changeTransform = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                changeTransform = new ChangeTransform();
+                for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                    changeTransform.addTarget(viewGroup.getChildAt(i));
+                }
+                addTransition(changeTransform);
+                changeTransform.setDuration(CLOSE_MORPH_TRANSFORM_DURATION);
             }
-            changeTransform.setDuration(CLOSE_MORPH_TRANSFORM_DURATION);
-            addTransition(changeTransform);
             addTransition(changeBound);
             setOrdering(TransitionSet.ORDERING_TOGETHER);
         }
