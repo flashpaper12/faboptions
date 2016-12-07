@@ -24,7 +24,6 @@ import android.support.annotation.MenuRes;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.internal.view.SupportMenu;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
@@ -110,8 +109,9 @@ public class FabOptions extends FrameLayout implements View.OnClickListener {
     }
 
     private void addButton(Context context, MenuItem menuItem) {
+        // TODO: 05/12/2016 Must get the drawableResId from drawable
         AppCompatImageView button = mButtonContainer.addButton(context, menuItem.getItemId(),
-                menuItem.getTitle(), menuItem.getIcon()).;
+                menuItem.getTitle(), menuItem.getIcon());
         button.setOnClickListener(this);
     }
 
@@ -154,17 +154,15 @@ public class FabOptions extends FrameLayout implements View.OnClickListener {
         }
     }
 
-
     private void open() {
-        AnimatedVectorDrawable drawable = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            drawable = (AnimatedVectorDrawable) getResources()
+            AnimatedVectorDrawable drawable = (AnimatedVectorDrawable) getResources()
                     .getDrawable(R.drawable.faboptions_ic_menu_animatable, null);
             mFab.setImageDrawable(drawable);
             drawable.start();
             TransitionManager.beginDelayedTransition(this, new OpenMorphTransition(mButtonContainer));
         } else {
-            mFab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.faboptions_ic_close));
+//            mFab.setImageResource(R.drawable.faboptions_ic_overflow);
         }
         scaleButtons(true);
         scaleBackground(true);
@@ -179,7 +177,7 @@ public class FabOptions extends FrameLayout implements View.OnClickListener {
             drawable.start();
             TransitionManager.beginDelayedTransition(this, new CloseMorphTransition(mButtonContainer));
         } else {
-            mFab.setImageResource(R.drawable.faboptions_ic_close);
+//            mFab.setImageResource(R.drawable.faboptions_ic_close);
         }
         scaleButtons(false);
         scaleBackground(false);
@@ -214,7 +212,7 @@ public class FabOptions extends FrameLayout implements View.OnClickListener {
             ChangeBounds changeBound = new ChangeBounds();
             changeBound.excludeChildren(R.id.button_container, true);
 
-            ChangeTransform changeTransform = null;
+            ChangeTransform changeTransform;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                 changeTransform = new ChangeTransform();
                 for (int i = 0; i < viewGroup.getChildCount(); i++) {
@@ -233,7 +231,7 @@ public class FabOptions extends FrameLayout implements View.OnClickListener {
             ChangeBounds changeBound = new ChangeBounds();
             changeBound.excludeChildren(R.id.button_container, true);
 
-            ChangeTransform changeTransform = null;
+            ChangeTransform changeTransform;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                 changeTransform = new ChangeTransform();
                 for (int i = 0; i < viewGroup.getChildCount(); i++) {
