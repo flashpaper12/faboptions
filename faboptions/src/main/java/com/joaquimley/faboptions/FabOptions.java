@@ -162,8 +162,9 @@ public class FabOptions extends FrameLayout implements View.OnClickListener {
             drawable.start();
             TransitionManager.beginDelayedTransition(this, new OpenMorphTransition(mButtonContainer));
         } else {
-//            mFab.setImageResource(R.drawable.faboptions_ic_overflow);
+            mFab.setImageResource(R.drawable.faboptions_ic_close);
         }
+
         scaleButtons(true);
         scaleBackground(true);
         mIsOpen = true;
@@ -177,7 +178,7 @@ public class FabOptions extends FrameLayout implements View.OnClickListener {
             drawable.start();
             TransitionManager.beginDelayedTransition(this, new CloseMorphTransition(mButtonContainer));
         } else {
-//            mFab.setImageResource(R.drawable.faboptions_ic_close);
+            mFab.setImageResource(R.drawable.faboptions_ic_overflow);
         }
         scaleButtons(false);
         scaleBackground(false);
